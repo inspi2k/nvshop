@@ -7,10 +7,10 @@ import pyautogui
 # 1. 검색할 상품 정보 찾기 - MID 추출, keyword 얻기
 default_mid = ""
 
-default_store = ""
-default_product = ""
+default_store = "래빗유"
+default_product = "논페이드 생지데님"
 
-default_keyword = ""
+default_keyword = "생지데님"
 
 get_mid = ""
 
@@ -81,7 +81,6 @@ elif check_mid == "Cancel":
     response = requests.get('https://search.shopping.naver.com/api/search/all', params=params, headers=headers)
 
     items = json.loads(response.text)
-    # items['shoppingResult']['products']
 
     print("{}'s product '{}' total={}".format(get_store, get_product, format(int(items['shoppingResult']['total']),",")))
     if items['shoppingResult']['total'] < 1:
