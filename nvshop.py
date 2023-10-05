@@ -4,15 +4,17 @@ import urllib.request
 import json
 import pyautogui
 
+
 # 1. 검색할 상품 정보 찾기 - MID 추출, keyword 얻기
-default_mid = ""
+default_mid = "86789733114"
 
-default_store = "래빗유"
-default_product = "논페이드 생지데님"
+default_store = "오로라 보이는 집"
+default_product = "토이카메라"
 
-default_keyword = "생지데님"
+default_keyword = "토이카메라"
 
 get_mid = ""
+result = "\n"
 
 check_mid = pyautogui.confirm("상품의 MID를 알고계십니까?", "상품 순위 찾기 (Step 1)")
 if check_mid == "OK":
@@ -37,7 +39,7 @@ elif check_mid == "Cancel":
     get_product = get_product.strip()
 
     pageIndex = 1
-    pageSize = 100
+    pageSize = 40
     encText = urllib.parse.quote(get_store)
 
     headers = {
@@ -47,7 +49,7 @@ elif check_mid == "Cancel":
         # 'cookie': 'NNB=XFAKOM3FWBEGG; ASID=3d63aeda00000183d9845de40000005f; autocomplete=use; AD_SHP_BID=18; _ga=GA1.2.1834935952.1667395532; SHP_BUCKET_ID=3; NSCS=1; nid_inf=-1414768515; NID_JKL=FicUSGqv2v1SQhZ86S5KYd02RYYknV1144+ObRT4k5s=; NID_AUT=tClj21DEE4vFWK+w9nNPBu3hDbKtmXdnCP2c/6SJT4dEOkjDxncwG3QryGaHXvNa; nx_ssl=2; _naver_usersession_=zDgBtoiR/jwCgOD7eSV4Yg==; NID_SES=AAABpZRkmxvTsNch089VjaxNIHFLfSw7p10oQTZD55oDBDLmwpK7widsK9FvMAV7MJlib1L/qCeWtdwZYk6MACz2BK2ClK7b2kRGMx6yvK0alZfbyv4Lsqp9VpmBPj0DlnGC5mYZ8/U9FSI+3k6BNf14Yni8d399yEBgMDSSbfbVWk13Ga5ZRBnVlBrCTmZYRPYqllalcsDWYNUUiGvd1jhlCAG/r0EXgZLxK9rspFkJXgMKkSAxmXT2AMeSVVkmhjz6arTrZf/1NGaQINrF4I4ttI0xjRyjd2SX905tXmgBP3ROzlTPPaGDeO0JI7RtEe99zg1rhisCNBJnMBJ9EUswOBMfvm3gmps5CxhBjNSzjToFA7j02qPU5IdYBoPqOPXs1/KDc5rZxuiC/It3gRwA7gPnbEFwYq3AvNr4UxlLHTEFskGpikQkEaZfyF+pwq1Mq2ePM8ZRpQxFlhBIhFx438b59q04mwMKhjKSfKzVtdAYGU8b4JSj3zpVtlPNX4GaAer9eipSQw1319GVneOR79yRpUL938biXG05hP7CY0hs3LrICbQ88uDAoe/XplY2MA==; page_uid=ieavrlp0Jy0ssl5A4Jwsssssths-304147; spage_uid=ieavrlp0Jy0ssl5A4Jwsssssths-304147',
         'dnt': '1',
         'logic': 'PART',
-        'referer': 'https://search.shopping.naver.com/search/all?frm=NVSHATC&origQuery='+encText+'&pagingIndex='+str(pageIndex)+'&pagingSize='+str(pageSize)+'&productSet=total&query='+encText+'&sort=rel&timestamp=&viewType=list',
+        'referer': 'https://search.shopping.naver.com/search/all?frm=NVSHATC&origQuery='+encText+'&pagingIndex='+str(pageIndex)+'&pagingSize='+str(pageSize)+'&productSet=total&query='+encText+'&sort=date&timestamp=&viewType=list',
         'sbth': '6bc7553b8fa3e04779448fd212e42bb46f18162e3d9873ba0d1b41409eae93a803b742c0cb6bfdbfc7737fc581f7e8eb',
         'sec-ch-ua': '"Whale";v="3", "Not-A.Brand";v="8", "Chromium";v="114"',
         'sec-ch-ua-arch': '"arm"',
@@ -73,7 +75,7 @@ elif check_mid == "Cancel":
     'pagingSize': str(pageSize),
     'productSet': 'total',
     'query': get_store,
-    'sort': 'rel',
+    'sort': 'date',
     'viewType': 'list',
     'xq': '',
     }
@@ -82,23 +84,46 @@ elif check_mid == "Cancel":
 
     items = json.loads(response.text)
 
-    print("{}'s product '{}' total={}".format(get_store, get_product, format(int(items['shoppingResult']['total']),",")))
+    msg = "storename = {}\nstopwordQuery = {}\nstrQueryType = {}".format(items['shoppingResult']["query"], items['shoppingResult']["stopwordQuery"], items['shoppingResult']["strQueryType"])
+    result += ("storename = {}".format(items['shoppingResult']["query"]) + "\n")
+    print(msg)
+
+    if len(items['shoppingResult']['nluTerms']) > 0 :
+        print("")
+        result += "\n"
+        for i, r in enumerate(items['shoppingResult']['nluTerms']):
+            # print(r)
+            # msg = f'{i}={r}'
+            msg = f"{r['keyword']}'s type = {r['type']}"
+            result += (msg + "\n")
+            print(msg)
+
     if items['shoppingResult']['total'] < 1:
         get_mid = ""
         print("can't searching")
+        pyautogui.alert(result + '\n\n' + "can't searhing")
         sys.exit(0)
     else:
+        print("")
+        msg = "store = {}'s total={}".format(get_store, format(int(items['shoppingResult']['total']),","))
+        
+        result += ("\n" + msg + "\n")
+        print(msg)
+
         # print(len(items['shoppingResult']['products']))
         for item in items['shoppingResult']['products']:
             if get_product in item['productTitle']:
                 get_mid = item['id']
-                print("mid={}, {}/{}".format(get_mid, item['rank'], items['shoppingResult']['total']))
+                msg = "{} product's mid = {}, {}/{}".format(get_product, get_mid, item['rank'], items['shoppingResult']['total'])
+                result += (msg + "\n\n")
+                print(msg)
 
 if get_mid == "":
     print("no mid!")
-    sys.exit(1)
+    pyautogui.alert(result + '\n\n' + "no mid!")
+    sys.exit(0)
 
-print("https://search.shopping.naver.com/gate.nhn?id={}".format(get_mid))
+# print("https://search.shopping.naver.com/gate.nhn?id={}".format(get_mid))
 
 # 2. keyword 순위를 가져와서 mid와 일치하는 순위(rank) 찾기
 get_keyword = pyautogui.prompt("키워드를 입력하세요", "상품 순위 찾기 (Step 3)", default=default_keyword)
@@ -158,21 +183,30 @@ while got_it == False:
     # items['shoppingResult']['products']
 
     if pageIndex == 1:
-        print("{}'s total={}".format(get_keyword, format(int(items['shoppingResult']['total']),",")))
+        print("")
+        msg = "keyword = {}'s total = {}".format(get_keyword, format(int(items['shoppingResult']['total']),","))
+        result += (msg + "\n")
+        print(msg)
 
     print(".", end="", flush=True)
-    if pageIndex % 10 == 0: print("")
+    if pageIndex % 10 == 0: print("({}p)".format(pageIndex), flush=True)
 
     if items['shoppingResult']['total'] < 1:
         get_mid = ""
         print("\nCan't Searching\nPlease retry - {}".format(get_keyword))
+        pyautogui.alert(result + '\n\n' + "can't searching!")
         sys.exit(0)
     else:
         for item in items['shoppingResult']['products']:
             if get_mid == item['id']:
-                print("\nmid({})'s rank is {:3>}".format(get_mid, format(int(item['rank']),",")),end="")
-                print(" ({:3>}p {:>2})".format(pageIndex, (int(item['rank'])-1)%pageSize+1))
+                print("")
+                msg = "{}-mid's rank is {:3>} ({:3>}p {:>2})".format(get_mid, format(int(item['rank']),",",), pageIndex, (int(item['rank'])-1)%pageSize+1)
+                result += (msg + "\n\n")
+                print(msg)
+                print("")
                 print(item['crUrl'])
                 got_it = True
                 break
         pageIndex += 1
+
+pyautogui.alert(result)
