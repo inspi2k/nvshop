@@ -6,12 +6,12 @@ import pyautogui
 
 
 # 1. 검색할 상품 정보 찾기 - MID 추출, keyword 얻기
-default_mid = "86789733114"
+default_store = ""
+default_product = ""
 
-default_store = "오로라 보이는 집"
-default_product = "토이카메라"
+default_mid = "86644663397"
 
-default_keyword = "토이카메라"
+default_keyword = "한우세트"
 
 get_mid = ""
 result = "\n"
