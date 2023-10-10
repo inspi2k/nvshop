@@ -227,7 +227,7 @@ while got_it == False:
 
     if pageIndex == 1:
         print("")
-        msg = "keyword = {}'s total = {} ({})".format(
+        msg = "keyword = {}'s total = {} ({}p)".format(
             get_keyword, format(int(items["shoppingResult"]["total"]), ","), format(math.ceil(int(items["shoppingResult"]["total"])/40), ",")
         )
         result += msg + "\n"
@@ -256,7 +256,7 @@ while got_it == False:
                     (int(item["rank"]) - 1) % pageSize + 1,
                     item["productTitle"],
                 )
-                result += msg + "\n\n"
+                result += ("\n" + msg + "\n\n")
                 print(msg)
                 print("")
                 print(item["crUrl"])
@@ -265,4 +265,4 @@ while got_it == False:
         pageIndex += 1
 
 # 3. 결과값 (window) 출력
-pyautogui.alert('\n'+result)
+pyautogui.alert(result)
