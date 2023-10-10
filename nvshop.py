@@ -1,4 +1,5 @@
 import sys
+import math
 import requests
 import urllib.request
 import json
@@ -227,7 +228,7 @@ while got_it == False:
     if pageIndex == 1:
         print("")
         msg = "keyword = {}'s total = {} ({})".format(
-            get_keyword, format(int(items["shoppingResult"]["total"]), ","), format(int(items["shoppingResult"]["total"])/40, ",")
+            get_keyword, format(int(items["shoppingResult"]["total"]), ","), math.ceil(format(int(items["shoppingResult"]["total"])/40), ",")
         )
         result += msg + "\n"
         print(msg)
@@ -245,7 +246,7 @@ while got_it == False:
         for item in items["shoppingResult"]["products"]:
             if get_mid == item["id"]:
                 print("")
-                msg = "{}-mid's rank is {:3>} ({:3>}p {:>2})\n\ttitle is '{}'".format(
+                msg = "{}-mid's rank is {:3>} ({:3>}p {:>2})\n title is '{}'".format(
                     get_mid, 
                     format(
                         int(item["rank"]),
@@ -264,4 +265,4 @@ while got_it == False:
         pageIndex += 1
 
 # 3. 결과값 (window) 출력
-pyautogui.alert(result)
+pyautogui.alert('\n'+result)
