@@ -228,7 +228,7 @@ while got_it == False:
     if pageIndex == 1:
         print("")
         msg = "keyword = {}'s total = {} ({})".format(
-            get_keyword, format(int(items["shoppingResult"]["total"]), ","), math.ceil(format(int(items["shoppingResult"]["total"])/40), ",")
+            get_keyword, format(int(items["shoppingResult"]["total"]), ","), format(math.ceil(int(items["shoppingResult"]["total"])/40), ",")
         )
         result += msg + "\n"
         print(msg)
