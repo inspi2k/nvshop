@@ -245,14 +245,15 @@ while got_it == False:
         for item in items["shoppingResult"]["products"]:
             if get_mid == item["id"]:
                 print("")
-                msg = "{}-mid's title is '{}'\n\trank is {:3>} ({:3>}p {:>2})".format(
-                    get_mid, item["productTitle"],
+                msg = "{}-mid's rank is {:3>} ({:3>}p {:>2})\n\ttitle is '{}'".format(
+                    get_mid, 
                     format(
                         int(item["rank"]),
                         ",",
                     ),
                     pageIndex,
                     (int(item["rank"]) - 1) % pageSize + 1,
+                    item["productTitle"],
                 )
                 result += msg + "\n\n"
                 print(msg)
