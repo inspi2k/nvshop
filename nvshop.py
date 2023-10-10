@@ -246,7 +246,7 @@ while got_it == False:
             if get_mid == item["id"]:
                 print("")
                 msg = "{}-mid's title is '{}'\n\trank is {:3>} ({:3>}p {:>2})".format(
-                    get_mid, item["title"],
+                    get_mid, item["productTitle"],
                     format(
                         int(item["rank"]),
                         ",",
