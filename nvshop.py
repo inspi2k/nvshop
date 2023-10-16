@@ -4,6 +4,8 @@ import math
 import requests
 import urllib.request
 import json
+import gspread
+import warnings
 import pyautogui
 
 
@@ -155,16 +157,71 @@ if get_mid == "":
 
 # print("https://search.shopping.naver.com/gate.nhn?id={}".format(get_mid))
 
+# 1-2. MID 키워드 기록
+get_write = pyautogui.prompt(
+    "찾은 MID와 키워드를 rank list 에 기록하시겠습니까?\n(1:기록 / 0:무기록)", "상품 순위 찾기 (Step 3-1)", default=1
+)
+if get_write == "1":
+    msg = "시트에 기록합니다\n\n"
+else:
+    msg = "시트에 기록하지 않습니다\n\n"
+
 # 2-1. 입력값 받기 - (keyword)
 get_keyword = pyautogui.prompt(
-    "키워드를 입력하세요", "상품 순위 찾기 (Step 3)", default=default_keyword
+    msg+"키워드를 입력하세요", "상품 순위 찾기 (Step 3-2)", default=default_keyword
 )
 if get_keyword == "" or get_keyword == None:
     pyautogui.alert("정상적인 입력으로 다시 시도해주세요")
     sys.exit(1)
 get_keyword = get_keyword.strip()
 
-# 2-2. 순위를 가져와서 mid와 일치하는 순위(rank) 찾기
+# 2-2. 시트에 기록
+if get_write == "1":
+    try:
+        gs_json = "cglab-python-9750d891fb6e.json"
+        gs_url = "https://docs.google.com/spreadsheets/d/18O363rcAZY7bz6l7BAjCcekyx08Ytv1Ana1LLtO8Uhs"
+        gs_sheet_list = "list"
+        gs_sheet_rank = "rank"
+
+        gc = gspread.service_account(filename="./" + gs_json)
+        doc = gc.open_by_url(gs_url)
+        worksheet = doc.worksheet(gs_sheet_list)
+
+        items = worksheet.get_all_records()
+
+        get_write_match = False
+        for item in items:
+            if (item["keyword"] == get_keyword) and (str(item["nvMid"]) == get_mid):
+                get_write_match = True
+                print("{} \talready item".format(datetime.now()))
+                break
+        
+        if get_write_match == False:
+            print("{} \tstart for google sheet writing".format(datetime.now()))
+
+            list_row = []
+            list_row.append(1)
+            list_row.append(get_store)
+            list_row.append(get_keyword)
+            list_row.append('')
+            list_row.append(get_mid)
+            list_row.append('')
+            list_row.append(datetime.now().strftime("%Y. %m. %d"))
+            # print(list_row)
+            r = len(worksheet.col_values(2)) + 1
+
+            warnings.filterwarnings(action="ignore")
+            worksheet.update('A' + str(r) + ':G' + str(r), [list_row])
+            warnings.filterwarnings(action="default")
+
+            print("{} \tfinish for google sheet writing".format(datetime.now()))
+
+    except Exception as e:
+        print("sheet processing exception:", e)
+
+product_title = ""
+product_rank = 0
+# 2-3. 순위를 가져와서 mid와 일치하는 순위(rank) 찾기
 pageIndex = 1
 pageSize = 40
 encText = urllib.parse.quote(get_keyword)
@@ -247,7 +304,8 @@ while got_it == False:
         for item in items["shoppingResult"]["products"]:
             if get_mid == item["id"]:
                 print("")
-                msg = "{}-mid's rank is {:3>} ({:3>}p {:>2})\n title is '{}'".format(
+                msg = "{}\t{}-mid's rank is {:3>} ({:3>}p {:>2})\n title is '{}'".format(
+                    datetime.now().strftime("%Y-%m-%d"),
                     get_mid, 
                     format(
                         int(item["rank"]),
@@ -262,8 +320,30 @@ while got_it == False:
                 print("")
                 print(item["crUrl"])
                 got_it = True
+                product_title = item["productTitle"]
+                product_rank = int(item["rank"])
                 break
         pageIndex += 1
 
-# 3. 결과값 (window) 출력
+# 3-1. rank sheet update
+if get_write_match == False:
+    wsheet = doc.worksheet(gs_sheet_rank)
+    ro = len(wsheet.col_values(1)) + 1
+
+    list_row = []
+    list_row.append(datetime.now().strftime("%Y-%m-%d"))
+    list_row.append(datetime.now().strftime("%H:%M:%S"))
+    list_row.append(1)
+    list_row.append(get_store)
+    list_row.append(get_keyword)
+    list_row.append(product_title)
+    list_row.append(get_mid)
+    list_row.append(product_rank)
+
+    warnings.filterwarnings(action="ignore")
+    worksheet.update('H' + str(r), product_rank)
+    wsheet.update('A' + str(ro) + ':H' + str(ro), [list_row])
+    warnings.filterwarnings(action="default")
+
+# 3-2. 결과값 (window) 출력
 pyautogui.alert(result)
