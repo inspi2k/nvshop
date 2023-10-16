@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import sys
 import math
 import requests
@@ -142,7 +143,7 @@ elif check_mid == "Cancel":
             if get_product in item["productTitle"]:
                 get_mid = item["id"]
                 msg = "{} product's mid = {}, opendate = {} ({}/{})".format(
-                    get_product, get_mid, item["openDate"], item["rank"], items["shoppingResult"]["total"]
+                    get_product, get_mid, datetime.strptime(item["openDate"],'%Y%m%d%H%M%S').strftime('%Y-%m-%d %H:%M:%S'), item["rank"], items["shoppingResult"]["total"]
                 )
                 result += msg + "\n\n"
                 print(msg)
