@@ -141,8 +141,8 @@ elif check_mid == "Cancel":
         for item in items["shoppingResult"]["products"]:
             if get_product in item["productTitle"]:
                 get_mid = item["id"]
-                msg = "{} product's mid = {}, {}/{}".format(
-                    get_product, get_mid, item["rank"], items["shoppingResult"]["total"]
+                msg = "{} product's mid = {}, opendate = {} ({}/{})".format(
+                    get_product, get_mid, item["openDate"], item["rank"], items["shoppingResult"]["total"]
                 )
                 result += msg + "\n\n"
                 print(msg)
