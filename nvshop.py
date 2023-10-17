@@ -176,6 +176,7 @@ if get_keyword == "" or get_keyword == None:
 get_keyword = get_keyword.strip()
 
 # 2-2. 시트에 기록
+get_write_match = False
 if get_write == "1":
     try:
         gs_json = "cglab-python-9750d891fb6e.json"
@@ -189,7 +190,6 @@ if get_write == "1":
 
         items = worksheet.get_all_records()
 
-        get_write_match = False
         for item in items:
             if (item["keyword"] == get_keyword) and (str(item["nvMid"]) == get_mid):
                 get_write_match = True
@@ -322,11 +322,14 @@ while got_it == False:
                 got_it = True
                 product_title = item["productTitle"]
                 product_rank = int(item["rank"])
+                if ('get_store' not in locals()) and ('get_store' not in globals()):
+                    get_store = item["mallName"]
                 break
         pageIndex += 1
 
 # 3-1. rank sheet update
-if get_write_match == False:
+# if get_write_match == False:
+if get_write == "1":
     wsheet = doc.worksheet(gs_sheet_rank)
     ro = len(wsheet.col_values(1)) + 1
 
@@ -334,14 +337,15 @@ if get_write_match == False:
     list_row.append(datetime.now().strftime("%Y-%m-%d"))
     list_row.append(datetime.now().strftime("%H:%M:%S"))
     list_row.append(1)
-    list_row.append(get_store)
+    list_row.append(get_store) # mid
     list_row.append(get_keyword)
     list_row.append(product_title)
     list_row.append(get_mid)
     list_row.append(product_rank)
 
     warnings.filterwarnings(action="ignore")
-    worksheet.update('H' + str(r), product_rank)
+    if 'r' in globals():
+        worksheet.update('H' + str(r), product_rank)
     wsheet.update('A' + str(ro) + ':H' + str(ro), [list_row])
     warnings.filterwarnings(action="default")
 
