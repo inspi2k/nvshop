@@ -295,37 +295,40 @@ while got_it == False:
     if pageIndex % 10 == 0:
         print("({}p)".format(pageIndex), flush=True)
 
-    if items["shoppingResult"]["total"] < 1:
-        get_mid = ""
-        print("\nCan't Searching\nPlease retry - {}".format(get_keyword))
-        pyautogui.alert(result + "\n\n" + "can't searching!")
-        sys.exit(0)
-    else:
-        for item in items["shoppingResult"]["products"]:
-            if get_mid == item["id"]:
-                print("")
-                msg = "{}\t{}-mid's rank is {:3>} ({:3>}p {:>2})\n title is '{}'".format(
-                    datetime.now().strftime("%Y-%m-%d"),
-                    get_mid, 
-                    format(
-                        int(item["rank"]),
-                        ",",
-                    ),
-                    pageIndex,
-                    (int(item["rank"]) - 1) % pageSize + 1,
-                    item["productTitle"],
-                )
-                result += ("\n" + msg + "\n\n")
-                print(msg)
-                print("")
-                print(item["crUrl"])
-                got_it = True
-                product_title = item["productTitle"]
-                product_rank = int(item["rank"])
-                if ('get_store' not in locals()) and ('get_store' not in globals()):
-                    get_store = item["mallName"]
-                break
-        pageIndex += 1
+    try:
+        if items["shoppingResult"]["total"] < 1:
+            get_mid = ""
+            print("\nCan't Searching\nPlease retry - {}".format(get_keyword))
+            pyautogui.alert(result + "\n\n" + "can't searching!")
+            sys.exit(0)
+        else:
+            for item in items["shoppingResult"]["products"]:
+                if get_mid == item["id"]:
+                    print("")
+                    msg = "{}\t{}-mid's rank is {:3>} ({:3>}p {:>2})\n title is '{}'".format(
+                        datetime.now().strftime("%Y-%m-%d"),
+                        get_mid, 
+                        format(
+                            int(item["rank"]),
+                            ",",
+                        ),
+                        pageIndex,
+                        (int(item["rank"]) - 1) % pageSize + 1,
+                        item["productTitle"],
+                    )
+                    result += ("\n" + msg + "\n\n")
+                    print(msg)
+                    print("")
+                    print(item["crUrl"])
+                    got_it = True
+                    product_title = item["productTitle"]
+                    product_rank = int(item["rank"])
+                    if ('get_store' not in locals()) and ('get_store' not in globals()):
+                        get_store = item["mallName"]
+                    break
+            pageIndex += 1
+    except Exception as e:
+        print("error check:", e)
 
 # 3-1. rank sheet update
 # if get_write_match == False:
