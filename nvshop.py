@@ -329,6 +329,7 @@ while got_it == False:
             pageIndex += 1
     except Exception as e:
         print("error check:", e)
+        sys.exit(1)
 
 # 3-1. rank sheet update
 # if get_write_match == False:
