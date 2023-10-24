@@ -18,6 +18,7 @@ default_mid = "86868741371"
 default_keyword = "여성청결제"
 
 get_mid = ""
+opendate = ""
 result = "\n"
 
 # 1-1. 입력값 받기 (mide / storename, title)
@@ -144,8 +145,9 @@ elif check_mid == "Cancel":
         for item in items["shoppingResult"]["products"]:
             if get_product in item["productTitle"]:
                 get_mid = item["id"]
+                opendate = datetime.strptime(item["openDate"],'%Y%m%d%H%M%S').strftime('%Y-%m-%d %H:%M:%S')
                 msg = "{} product's mid = {}, opendate = {} ({}/{})".format(
-                    get_product, get_mid, datetime.strptime(item["openDate"],'%Y%m%d%H%M%S').strftime('%Y-%m-%d %H:%M:%S'), item["rank"], items["shoppingResult"]["total"]
+                    get_product, get_mid, opendate, item["rank"], items["shoppingResult"]["total"]
                 )
                 result += msg + "\n\n"
                 print(msg)
@@ -209,6 +211,7 @@ if get_write == "1":
             list_row.append(datetime.now().strftime("%Y. %m. %d"))
             # print(list_row)
             r = len(worksheet.col_values(2)) + 1
+            list_row.append(opendate)
 
             warnings.filterwarnings(action="ignore")
             worksheet.update('A' + str(r) + ':G' + str(r), [list_row])
