@@ -208,13 +208,14 @@ if get_write == "1":
             list_row.append('')
             list_row.append(get_mid)
             list_row.append('')
+            list_row.append(opendate)
             list_row.append(datetime.now().strftime("%Y. %m. %d"))
             # print(list_row)
             r = len(worksheet.col_values(2)) + 1
-            list_row.append(opendate)
 
             warnings.filterwarnings(action="ignore")
-            worksheet.update('A' + str(r) + ':G' + str(r), [list_row])
+            worksheet.update('A' + str(r) + ':H' + str(r), [list_row])
+            worksheet.format('E' + str(r) + ':H' + str(r), {'numberFormat':{'type':'NUMBER_FORMAT_TYPE_UNSPECIFIED'}})
             warnings.filterwarnings(action="default")
 
             print("{} \tfinish for google sheet writing".format(datetime.now()))
@@ -352,7 +353,7 @@ if get_write == "1":
 
     warnings.filterwarnings(action="ignore")
     if 'r' in globals():
-        worksheet.update('H' + str(r), product_rank)
+        worksheet.update('I' + str(r), product_rank)
     wsheet.update('A' + str(ro) + ':H' + str(ro), [list_row])
     warnings.filterwarnings(action="default")
 
