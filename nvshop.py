@@ -124,10 +124,10 @@ elif check_mid == "Cancel":
         if len(items["shoppingResult"]["nluTerms"]) > 0:
             print("")
             result += "\n"
-            for i, r in enumerate(items["shoppingResult"]["nluTerms"]):
+            for i, rr in enumerate(items["shoppingResult"]["nluTerms"]):
                 # print(r)
                 # msg = f'{i}={r}'
-                msg = f"{r['keyword']}'s type = {r['type']}"
+                msg = f"{rr['keyword']}'s type = {rr['type']}"
                 result += msg + "\n"
                 print(msg)
 
